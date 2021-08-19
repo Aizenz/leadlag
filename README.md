@@ -19,7 +19,7 @@
 
 现在我们已经拥有了一个可以求得所有指定trade pair模仿趋势的方法了，则对于任意creator pair m&n，
 我们可以把他们n到m的所有模仿趋势加总，得到by creator 的关系亲密程度指数：
-> 2⃣️creator pair关系亲密程度定义：$Relationship_{nm} = \Sigma_{n,m\in C}Tendency_{ij}(i\in n,j \in m)$$$ 
+> 2⃣️creator pair关系亲密程度定义：$$Relationship_{nm} = \Sigma_{n,m\in C}Tendency_{ij}(i\in n,j \in m)$$
 
 需要注意的是，这是一个有方向的关系，这意味着两个交易员可能存在互相模仿的问题。
 
