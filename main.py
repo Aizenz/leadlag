@@ -22,7 +22,7 @@ if __name__ == "__main__":
         field = df[df['industry'] == industry]
         matrix = relationship.relationmatrix(field, by='industry')
         matrix = matrix.to_numpy()
-        #matrix = devide(matrix)
+        matrix = devide(matrix)
         G = nx.DiGraph(matrix)
         i += 1
         plt.subplot(10, 3, i)
@@ -30,8 +30,8 @@ if __name__ == "__main__":
 
 
         strenth = 1
-        elarge = [(u, v) for (u, v, d) in G.edges(data=True) if d['weight'] > strenth]
-        esmall = [(u, v) for (u, v, d) in G.edges(data=True) if d['weight'] <= strenth]
+        elarge = [(u, v) for (u, v, d) in G.edges(data=True) if d['weight'] < strenth]
+        esmall = [(u, v) for (u, v, d) in G.edges(data=True) if d['weight'] >= strenth]
         pos = nx.spring_layout(G)
         nx.draw_networkx_nodes(G, pos, node_size=0.7)
         nx.draw_networkx_edges(G, pos, edgelist=elarge, width=2, edge_color='r', arrows=False)
