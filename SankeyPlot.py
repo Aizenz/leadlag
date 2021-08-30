@@ -5,13 +5,19 @@ import relationship
 
 df = pd.read_excel('/Users/aizenz/Desktop/internHI/ideas_u20210811202801.xlsx')
 matrix = relationship.relationmatrix(df)
+matrix.to_excel('matrix.xlsx')
 creators = df['creator'].unique()
 
 links = []
+res = pd.DataFrame(columns=('follower', 'leader', 'strength'))
 for i in range(len(creators)):
     for j in range(len(creators)):
-        if i != 0 and j != 0 and matrix.iloc[i, j] > 1 and matrix.iloc[i, j] < 1000:
+        if i != 0 and j != 0 and matrix.iloc[i,j] > 0.33:
             links.append([i, j, matrix.iloc[i, j]])
+            temp = pd.DataFrame([[matrix.index[i], matrix.columns[j], matrix.iloc[i, j]]],columns=('follower', 'leader', 'strength'))
+            res = res.append(temp)
+res = res.sort_values(by='strength',ascending=False).reset_index()
+res.to_excel('relationstrength.xlsx')
 
 data = [go.Sankey(
     node=dict(
@@ -30,4 +36,3 @@ fig = go.Figure(data)
 
 fig.update_layout(title_text="Basic Sankey Diagram", font_size=10)
 py.plot(fig, filename='filename.html')
-
