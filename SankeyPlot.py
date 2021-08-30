@@ -12,7 +12,7 @@ links = []
 res = pd.DataFrame(columns=('follower', 'leader', 'strength'))
 for i in range(len(creators)):
     for j in range(len(creators)):
-        if i != 0 and j != 0 and matrix.iloc[i,j] > 0.33:
+        if i != 0 and j != 0 and 1 < matrix.iloc[i, j] < 700:
             links.append([i, j, matrix.iloc[i, j]])
             temp = pd.DataFrame([[matrix.index[i], matrix.columns[j], matrix.iloc[i, j]]],columns=('follower', 'leader', 'strength'))
             res = res.append(temp)
