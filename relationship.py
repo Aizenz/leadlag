@@ -15,9 +15,11 @@ def tendency(i,j,para=1)->float:
     # para is used to determine how much tendency should be included,
     # the higher it is , the morer tendency will be included
     if(i==j): return 0
-    timedelta = (i-j)/np.timedelta64(1, 'D')
-    timedelta = -para*1/timedelta
+    timedelta = (j-i)/np.timedelta64(1, 'D')
+    if -0.00694444444445<timedelta<0.00694444444445:return 0
+    timedelta = para*1/timedelta
     return timedelta
+
 def relationmatrix(df,by='ticker')->pd.DataFrame:
     # This function return a relationship matrix between creator in the form of directed graphs
     # This matrix measures the tendency from creator j to i, which means i is leader and j is lag
@@ -30,19 +32,20 @@ def relationmatrix(df,by='ticker')->pd.DataFrame:
         tickersgroup = df[df[by] == area]
         # You should notice that i&j are not continuous numbers because the index is not continuous
         for i, row_i in tickersgroup.iterrows():
-            for j, row_j in tickersgroup.iterrows():
+            for j, column_j in tickersgroup.iterrows():
                 if (j <= i):
                     continue
                 # make sure that the followers have the same direction
-                elif (row_i['direction'] == row_j['direction'] and row_i['creator'] != row_j['creator']):
+                elif (row_i['direction'] == column_j['direction'] and row_i['creator'] != column_j['creator']):
                     # if temp>0,then i is the leader and j is the lag
                     # the rows indicate where they pointed to, and the columns indicate who is pointing them
-                    # so the columns are the leader index.
-                    temp = tendency(row_i['create_time'], row_j['create_time'])
+                    # so the rows are the leader index.
+                    temp = tendency(row_i['create_time'], column_j['create_time'])
                     if (temp < 0):
-                        matrix.loc[row_i['creator'], row_j['creator']] -= temp
+                        matrix.loc[row_i['creator'], column_j['creator']] -= temp
                     elif (temp > 0):
-                        matrix.loc[row_i['creator'], row_j['creator']] += temp
+                        matrix.loc[row_i['creator'], column_j['creator']] += temp
+                    else:continue
     return matrix
 
 if __name__ == "__main__":

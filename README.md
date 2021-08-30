@@ -37,6 +37,7 @@ df是你需要传入的ideas列表，他至少应该包含creat_time,creator,tic
 by是你需要指明的类别，如果by = 'ticker'则在所有同ticker 的交易中寻找idea pairs。如果by = 'industry'，则在所有同industry的交易中寻找idea pairs.
 
 该函数会返回一个pandas.Dataframe 他的横纵坐标都是creator， 他的参数表明了横坐标指向纵坐标的关系亲密程度，即定义2⃣️。
+![avatar](MeaningOfthematrix.jpeg)
 ### 可能存在的问题
 ___
 1. 该算法的idea pair的关系并不稳固，因为使用了时间差来定义概率，然而时间差的影响因素很多，并不一定时间差小的idea pairs 模仿概率就大
