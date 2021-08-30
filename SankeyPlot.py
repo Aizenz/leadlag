@@ -37,4 +37,4 @@ data = [go.Sankey(
 fig = go.Figure(data)
 
 fig.update_layout(title_text="Basic Sankey Diagram", font_size=10)
-py.plot(fig, filename='filename.html')
+py.plot(fig, filename='SankeyPlot.html')
