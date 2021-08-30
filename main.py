@@ -11,7 +11,7 @@ def devide(matrix):
                 matrix[i][j] = 1.0/matrix[i][j]
     return matrix
 
-if __name__ == "__main__":
+if __name__ == "test":
     df = pd.read_excel('/Users/aizenz/Desktop/internHI/ideas_u20210811202801.xlsx')
     industries = df['industry'].unique()
     industries = np.sort(industries)
@@ -42,4 +42,5 @@ if __name__ == "__main__":
     plt.savefig("weighted_graph.png")
     plt.show()
 
+if __name__ == "__main__":
 
