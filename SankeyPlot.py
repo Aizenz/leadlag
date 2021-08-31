@@ -4,22 +4,22 @@ import pandas as pd
 import relationship
 
 df = pd.read_excel('/Users/aizenz/Desktop/internHI/ideas_u20210811202801.xlsx')
-matrix = relationship.relationmatrix(df, by='level3')
+matrix = relationship.relationmatrix(df, by='ticker')
 matrix.to_excel('matrix.xlsx')
 creators = df['creator'].unique()
 
 links = []
-res = pd.DataFrame(columns=('leader', 'follower', 'strength'))
+res = pd.DataFrame(columns=('follower', 'leader', 'strength'))
 for i in range(len(creators)):
     for j in range(len(creators)):
         # ------------------- here comes the filter
-        if i != 0 and j != 0 and 1 < matrix.iloc[i, j]:
+        if i != 0 and j != 0 and 3 < matrix.iloc[i, j]:
             links.append([i, j, matrix.iloc[i, j]])
             temp = pd.DataFrame([[matrix.index[i], matrix.columns[j], matrix.iloc[i, j]]],
-                                columns=('leader', 'follower', 'strength'))
+                                columns=('follower', 'leader', 'strength'))
             res = res.append(temp)
 res = res.sort_values(by='strength', ascending=False).reset_index()
-res.to_excel('relationstrength.xlsx')
+res.to_excel('relationstrengthWithPagerank.xlsx')
 
 data = [go.Sankey(
     node=dict(
@@ -30,8 +30,8 @@ data = [go.Sankey(
         color="blue"
     ),
     link=dict(
-        source=[i[1] for i in links],
-        target=[i[0] for i in links],
+        source=[i[0] for i in links],
+        target=[i[1] for i in links],
         value=[i[2] for i in links]
     ))]
 fig = go.Figure(data)

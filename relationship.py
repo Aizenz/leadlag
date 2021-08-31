@@ -11,14 +11,40 @@ from matplotlib import pyplot as plt
 # it is defined as
 # Y = 1/Deltatime(days)
 # the closer the time is, the bigger the intendency is.
-def tendency(i,j,para=1)->float:
+def tendency(i,j)->float:
     # para is used to determine how much tendency should be included,
     # the higher it is , the morer tendency will be included
+    # i = follwer,j = leader
     if(i==j): return 0
-    timedelta = (j-i)/np.timedelta64(1, 'D')
-    if -0.00694444444445<timedelta<0.00694444444445:return 0
-    timedelta = para*1/timedelta
-    return timedelta
+    timedelta = (i-j)/np.timedelta64(1, 'D')
+    if timedelta>0:
+        if timedelta < 1:
+            return 5
+        elif timedelta < 2:
+            return 4
+        elif timedelta < 3:
+            return 3
+        elif timedelta < 4:
+            return 2
+        elif timedelta < 5:
+            return 1
+        else:
+            return 0.1
+    elif timedelta<0:
+        if -1 < timedelta:
+            return -5
+        elif -2 < timedelta:
+            return -4
+        elif -3 < timedelta:
+            return -3
+        elif -4 < timedelta:
+            return -2
+        elif -5 < timedelta:
+            return -1
+        else:
+            return -0.1
+
+
 
 def relationmatrix(df,by='ticker')->pd.DataFrame:
     # This function return a relationship matrix between creator in the form of directed graphs
@@ -42,7 +68,7 @@ def relationmatrix(df,by='ticker')->pd.DataFrame:
                     # so the rows are the leader index.
                     temp = tendency(row_i['create_time'], column_j['create_time'])
                     if (temp < 0):
-                        matrix.loc[row_i['creator'], column_j['creator']] -= temp
+                        matrix.loc[column_j['creator'], row_i['creator']] -= temp
                     elif (temp > 0):
                         matrix.loc[row_i['creator'], column_j['creator']] += temp
                     else:continue
