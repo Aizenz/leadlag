@@ -62,7 +62,7 @@ if __name__ =='2':
     res = res[res['PR'] != 0].reset_index().drop(columns='index')
     res.to_csv('ideaPR.csv')
 
-# The resignation
+# The robustness of stratum
 if __name__ =='__main__':
     df = pd.read_excel('/Users/aizenz/Desktop/internHI/ideasData/lifetimeIdeas_u20210901103447.xlsx')
     dfBefore = df[df['create_time'] < np.datetime64('2021-08-01')]
