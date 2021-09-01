@@ -46,13 +46,16 @@ def tendency(i,j)->float:
 
 
 
-def relationmatrix(df,by='ticker')->pd.DataFrame:
+def relationmatrix(df:pd.DataFrame,by='ticker',pair_name = 'creator')->pd.DataFrame:
     # This function return a relationship matrix between creator in the form of directed graphs
     # This matrix measures the tendency from creator j to i, which means i is leader and j is lag
     # by can be 'ticker' |  'industry'
+    # pair_name can be 'creator' or 'idea_entity_id'
+    # ----------
+    # Notice that 'by' mustn't be equavalent with pair_name
     areas = df[by].unique()
-    creators = df['creator'].unique()
-    matrix = pd.DataFrame(np.zeros((len(creators), len(creators))), index=creators, columns=creators)
+    pairs = df[pair_name].unique()
+    matrix = pd.DataFrame(np.zeros((len(pairs), len(pairs))), index=pairs, columns=pairs)
 
     for area in areas:
         tickersgroup = df[df[by] == area]
@@ -62,15 +65,15 @@ def relationmatrix(df,by='ticker')->pd.DataFrame:
                 if (j <= i):
                     continue
                 # make sure that the followers have the same direction
-                elif (row_i['direction'] == column_j['direction'] and row_i['creator'] != column_j['creator']):
+                elif (row_i['direction'] == column_j['direction'] and row_i[pair_name] != column_j[pair_name]):
                     # if temp>0,then i is the leader and j is the lag
                     # the rows indicate where they pointed to, and the columns indicate who is pointing them
                     # so the rows are the leader index.
                     temp = tendency(row_i['create_time'], column_j['create_time'])
                     if (temp < 0):
-                        matrix.loc[column_j['creator'], row_i['creator']] -= temp
+                        matrix.loc[column_j[pair_name], row_i[pair_name]] -= temp
                     elif (temp > 0):
-                        matrix.loc[row_i['creator'], column_j['creator']] += temp
+                        matrix.loc[row_i[pair_name], column_j[pair_name]] += temp
                     else:continue
     return matrix
 
