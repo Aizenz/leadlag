@@ -38,6 +38,7 @@ if __name__ == "test":
 if __name__ == "__main__":
     df = pd.read_excel('/Users/aizenz/Desktop/internHI/ideasData/lifetimeIdeas_u20210901103447.xlsx')
     matrix = relationship.relationmatrix(df, by='ticker', pair_name='idea_entity_id')
+    df.lifetimeAlpha = df['lifetimeAlpha']/df['size']
     # Pagerank
     G = nx.DiGraph(matrix.to_numpy())
     pr = nx.pagerank(G, alpha=0.9)
