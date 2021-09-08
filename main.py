@@ -9,7 +9,7 @@ from scipy import stats
 if __name__ == "1":
     df = pd.read_excel('/Users/aizenz/Desktop/internHI/ideasData/lifetimeIdeas_u20210901103447.xlsx')
     matrix = relationship.relationmatrix(df, by='ticker', pair_name='idea_entity_id')
-    df.lifetimeAlpha = df['lifetimeAlpha']/df['size']
+    df.lifetimeAlpha = df['lifetimeAlpha'] / df['size']
     # Pagerank
     G = nx.DiGraph(matrix.to_numpy())
     pr = nx.pagerank(G, alpha=0.9)
@@ -28,7 +28,7 @@ if __name__ == "1":
 
 # By contributor level
 
-if __name__ =='2':
+if __name__ == '2':
     df = pd.read_excel('/Users/aizenz/Desktop/internHI/ideasData/lifetimeIdeas_u20210901103447.xlsx')
     matrix = relationship.relationmatrix(df, by='ticker', pair_name='creator')
     df.lifetimeAlpha = df['lifetimeAlpha'] / df['size']
@@ -46,7 +46,7 @@ if __name__ =='2':
     print('leader:', stats.spearmanr(pr['PR'], pr['lifetimeAlpha'], alternative='greater'))
 
     # Pagerank by follower, using the reverse matrix
-    G = nx.DiGraph(matrix.to_numpy().T)
+    G = nx.DiGraph(matrix.to_numpy())
     pr = nx.pagerank(G, alpha=0.9)
     pr = pd.DataFrame(pr, index=[0]).T.set_axis(matrix.index).reset_index()
     pr.columns = ['creator', 'PR']
@@ -63,18 +63,20 @@ if __name__ =='2':
     res.to_csv('ideaPR.csv')
 
 # The robustness of stratum
-if __name__ =='__main__':
+if __name__ == '3':
     df = pd.read_excel('/Users/aizenz/Desktop/internHI/ideasData/lifetimeIdeas_u20210901103447.xlsx')
     dfBefore = df[df['create_time'] < np.datetime64('2021-08-01')]
     dfAfter = df[df['create_time'] >= np.datetime64('2021-08-01')]
     matrixBefore = relationship.relationmatrix(dfBefore, by='ticker', pair_name='creator')
     matrixAfter = relationship.relationmatrix(dfAfter, by='ticker', pair_name='creator')
 
-    prBefore = pd.DataFrame(nx.pagerank(nx.DiGraph(matrixBefore.to_numpy()), alpha=0.9), index=[0]).T.set_axis(matrixBefore.index).reset_index()
+    prBefore = pd.DataFrame(nx.pagerank(nx.DiGraph(matrixBefore.to_numpy()), alpha=0.9), index=[0]).T.set_axis(
+        matrixBefore.index).reset_index()
     prBefore.columns = ['creator', 'PRBeforeAug']
     prBefore = prBefore.sort_values(by='PRBeforeAug', ascending=False)
 
-    prAfter = pd.DataFrame(nx.pagerank(nx.DiGraph(matrixAfter.to_numpy()), alpha=0.9), index=[0]).T.set_axis(matrixAfter.index).reset_index()
+    prAfter = pd.DataFrame(nx.pagerank(nx.DiGraph(matrixAfter.to_numpy()), alpha=0.9), index=[0]).T.set_axis(
+        matrixAfter.index).reset_index()
     prAfter.columns = ['creator', 'PRAfterAug']
     prAfter = prAfter.sort_values(by='PRAfterAug', ascending=False)
     # Spearman correlation
@@ -82,3 +84,12 @@ if __name__ =='__main__':
     pr.to_excel('robustness.xlsx')
     print(stats.spearmanr(pr['PRBeforeAug'], pr['PRAfterAug']))
 
+if __name__ == "__main__":
+    data = pd.read_csv('test.csv')
+    data = data.drop(columns='Unnamed: 0').stack()
+    dataset = pd.DataFrame(index=['creator', 'time', 'value'])
+
+    print(data)
+    # my_raceplot = barplot(data, item_column='creator', value_column='Value', time_column='date')
+
+    # my_raceplot.plot(item_label='Top 10 crops', value_label='Production quantity (tonnes)', frame_duration=800)
