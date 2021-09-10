@@ -30,3 +30,4 @@ if __name__ == "__main__":
         PR_list.to_csv('test.csv')
 
     # 2.The independence of an idea
+

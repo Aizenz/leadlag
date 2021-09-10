@@ -1,5 +1,7 @@
 import datetime
 import numpy as np
+import plotly.offline as py
+
 import relationship
 import pandas as pd
 import networkx as nx
@@ -84,12 +86,20 @@ if __name__ == '3':
     pr.to_excel('robustness.xlsx')
     print(stats.spearmanr(pr['PRBeforeAug'], pr['PRAfterAug']))
 
+# time-series PageRank
 if __name__ == "__main__":
     data = pd.read_csv('test.csv')
-    data = data.drop(columns='Unnamed: 0').stack()
-    dataset = pd.DataFrame(index=['creator', 'time', 'value'])
+    data = data.drop(columns='Unnamed: 0')
+    dataset = pd.DataFrame(columns=['creator', 'time', 'value'])
+    k = 0
+    for i in range(len(data.index)):
+        for j in range(1, len(data.columns)):
 
-    print(data)
-    # my_raceplot = barplot(data, item_column='creator', value_column='Value', time_column='date')
+            dataset = dataset.append(dict(creator=data['creator'][i], time=data.columns[j], value=data.iloc[i, j]),ignore_index=True)
 
-    # my_raceplot.plot(item_label='Top 10 crops', value_label='Production quantity (tonnes)', frame_duration=800)
+    from raceplotly.plots import barplot
+    my_raceplot = barplot(dataset, item_column='creator', value_column='value', time_column='time')
+
+    figure = my_raceplot.plot(item_label='Top 10 creator', value_label='weight of PageRank', frame_duration=800)
+
+    py.plot(figure, filename='DynamicPagerank.html')
