@@ -1,45 +1,62 @@
-# 使用说明
-### 作用：探究谁是交易员中的领袖，谁是交易员中的mockingbird
-### 方法：通过交易之间的时间差来寻找不同交易员的交易相似性
-___
-> 假设：两笔同类同向交易之间的时间差越少，则该"trade pair"的相似性越高，后者越有可能是前者的模仿者。
+# Introduction
 
-类别一：By='ticker'。对每一只股票来说，前人的交易总是可能给后人一些启示。
-我们假设每一笔交易都被后面所有的交易所模仿，且时间越近的交易模仿可能性越高，
-对任意两笔同ticker的trade pair i&j，定义模仿趋势如下。
+### Purpose: 
+To identify the leaders and the 'mockingbirds' among traders.
 
-类别二：By='industry'。模仿者可能不会直接购买领导者所买的股票，而是购买了同行业的股票，
-我们把这种扩大类别的跟随交易也视作相似策略。同样的，定义任意两笔同industry的trade pair i&j，
-定义模仿趋势如下。
+### Method: 
+Identifying similarities in trading patterns among different traders based on the time intervals between their trades.
 
-> 1⃣️idea pair模仿趋势定义：$$ tendency_{ij} = \frac{1}{time_j-time_i}$$
+---
 
-则对于交易i&j而言，tendency越小，则说明j跟随i的可能性越小，tendency越大，
-则说明j跟随i的可能性越大。tendency大于1，意味着这两者之间的交易时间差小于24小时。
-需要注意的是，这里的time已经换算成了天的整数倍。
+> Assumption: 
+The shorter the time interval between two similar and directionally identical trades, the higher the similarity of the "trade pair", and the more likely it is that the latter trade is imitating the former.
 
-现在我们已经拥有了一个可以求得所有指定trade pair模仿趋势的方法了，则对于任意creator pair m&n，
-我们可以把他们n到m的所有模仿趋势加总，得到by creator 的关系亲密程度指数：
-> 2⃣️creator pair关系亲密程度定义：$$Relationship_{nm} = \Sigma_{n,m\in C}Tendency_{ij}(i\in n,j \in m)$$
+#### Category 1: By='ticker'
+For each stock, earlier trades can potentially inspire subsequent ones. We assume that every trade is imitated by all following trades, with those closer in time having a higher likelihood of imitation. For any two trades (trade pair i & j) with the same ticker, we define the imitation tendency as follows.
 
-需要注意的是，这是一个有方向的关系，这意味着两个交易员可能存在互相模仿的问题。
+#### Category 2: By='industry'
+Imitators may not directly purchase the stocks bought by leaders but might buy stocks from the same industry, considering such follow-the-leader trades in an expanded category as similar strategies. Similarly, for any two trades (trade pair i & j) within the same industry, we define the imitation tendency.
 
-此时我们得到了一张creators * creators 的正方形矩阵，这是一张有向图，他的每一列指示了该列的creator指向其他人的程度，
-他的每一行指示了该creator被多少人指向，即他被多少人模仿的程度。
+> #### 1️⃣ Definition of Imitation Tendency for Idea Pairs:
+>
+> $$
+> tendency_{ij} = \frac{1}{time_j-time_i}
+> $$
+>
 
+For trades i & j, a smaller 'tendency' value indicates a lower probability of j following i, and vice versa. A 'tendency' greater than 1 implies that the time interval between the two trades is less than 24 hours. Note that 'time' is converted into whole days here.
 
-### 使用说明：
-___
-relationship.relationshipmetrix(df,by):
+Now, having a method to calculate the imitation tendency for all specified trade pairs, we can sum up all imitation tendencies from trader n to m for any creator pair m & n, deriving an index of relational closeness by creator:
 
-df是你需要传入的ideas列表，他至少应该包含creat_time,creator,ticker,industry。
+> #### 2️⃣ Definition of Relational Closeness for Creator Pairs:
+>
+> $$
+> Relationship_{nm} = \Sigma_{n,m\in C}Tendency_{ij}(i\in n,j \in m)
+> $$
+>
 
-by是你需要指明的类别，如果by = 'ticker'则在所有同ticker 的交易中寻找idea pairs。如果by = 'industry'，则在所有同industry的交易中寻找idea pairs.
+Note that this represents a directional relationship, suggesting the possibility of mutual imitation between two traders.
 
-该函数会返回一个pandas.Dataframe 他的横纵坐标都是creator， 他的参数表明了横坐标指向纵坐标的关系亲密程度，即定义2⃣️。
-![avatar](MeaningOfthematrix.jpeg)
-### 可能存在的问题
-___
-1. 该算法的idea pair的关系并不稳固，因为使用了时间差来定义概率，然而时间差的影响因素很多，并不一定时间差小的idea pairs 模仿概率就大
-2. 同一个人可能对同一个ticker前后做了多次交易，我在计算tendency的时候，排除了同一个人进行的同类别交易之间的影响，即自己不可能是自己的模仿者。
-3. 研究中
+This results in a creators * creators square matrix, forming a directed graph. Each column of this matrix indicates the extent to which the creator in that column is influenced by others, while each row shows how much that creator influences others, indicating the degree to which they are imitated.
+
+### Usage Instructions:
+
+---
+
+`relationship.relationshipmetrix(df, by):`
+
+'df' is the list of ideas you need to input, containing at least creat_time, creator, ticker, and industry.
+
+'by' is the category you need to specify. If by = 'ticker', the function searches for idea pairs among all trades with the same ticker. If by = 'industry', it finds idea pairs among trades within the same industry.
+
+This function returns a pandas.DataFrame with creators as both rows and columns. The values indicate the degree of relational closeness as defined in 2️⃣.
+
+![Meaning of the matrix](MeaningOfthematrix.jpeg)
+
+### Potential Issues
+
+---
+
+1. The relationship in the idea pairs defined by this algorithm is not stable, as it is based on time intervals. However, many factors can influence time intervals, and a shorter interval does not necessarily mean a higher probability of imitation.
+2. The same person might have executed multiple trades for the same ticker at different times. In calculating the 'tendency', the influence of similar trades by the same person is excluded, assuming one cannot be their own imitator.
+3. Ongoing research.
